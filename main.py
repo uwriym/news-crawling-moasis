@@ -3,7 +3,7 @@ import requests  # URL 요청
 from bs4 import BeautifulSoup  # 웹사이트 크롤링
 from collections import Counter  # 단어 빈도수 정리
 
-keyword = '넷플릭스'#input('검색어를 입력하세요: ')
+keyword = input('검색어를 입력하세요: ')
 last_page = int(input('몇 페이지까지 검색할까요? '))
 
 search_url = f'https://search.naver.com/search.naver?where=news&ie=utf8&sm=nws_hty&query={keyword}'
@@ -88,6 +88,14 @@ for word in word_list:
 
 # 단어 빈도 수 측정
 word_count = Counter(word_list)
-print(word_count)
+
+# 파일 생성
+words_file = open(f'/Users/eoorim/Desktop/Coding/Python/bigdata_seminar/{keyword} Words.txt', 'w')
+for word in word_list:
+    words_file.write(word)
+    words_file.write(', ')
+
+count_file = open(f'/Users/eoorim/Desktop/Coding/Python/bigdata_seminar/{keyword} Count.txt', 'w')
+count_file.write(str(word_count))
 
 
