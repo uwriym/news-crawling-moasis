@@ -43,7 +43,8 @@ def get_content(url):
 for url in get_link():
     get_content(url)
 
-# 불용어 제거 3단계
+
+# 불용어 제거 5단계
 
 really_bad_word_list = []  # 공백을 기준으로 구분된 단어 리스트
 bad_word_list = []  # 마침표를 기준으로 구분된 단어 리스트
@@ -58,9 +59,27 @@ for list in really_bad_word_list:
     for word in list:
         bad_word_list.append(word.split('.'))
 
-# 3단계
+# 3단계 - 문장부호 제거 및 두 글자 이상 불용어 제거
 for word in bad_word_list:
-    word_list.append(word[0].replace('가',''))
+    word_list.append(word[0].replace('\'','').replace('\"','').replace('(','').replace(')','')\
+                    .replace('<','').replace('>','').replace(',','').replace('‘','')\
+                    .replace('’', '').replace('[','').replace(']','').replace('=','')\
+                    .replace('했다','').replace('이하','').replace('해나가고','').replace('입니다',''))
+
+# 4단계 - 단어 끝 조사 제거
+word_list_count = 0
+for word in word_list:
+    if len(word) != 0:
+        if word[-1] in '을를이가은는':
+            word_list[word_list_count] = word[:-1]
+    word_list_count += 1
+
+# 5단계 - 한 글자 이하 단어 제거
+for word in word_list:
+    if len(word) <= 1:
+        word_list.remove(word)
+
+print(word_list)
 
 
 
