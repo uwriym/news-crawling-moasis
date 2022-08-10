@@ -21,9 +21,25 @@ def get_link():
         bad_link_list.append(news_link)
 
     for link in bad_link_list:
-        if 'naver' in link: # url에 naver가 들어가 있는지 확인
+        if 'naver' in link: # URL에 'naver'가 들어가 있는지 확인
             link_list.append(link)
 
-    return link_list # 뉴스 url 리스트 반환
+    return link_list # 뉴스 URL 리스트 반환
 
-print(get_link())
+
+content_text_list = []  # 텍스트만 추출한 content 리스트
+
+# content 얻기
+def get_content(url):
+
+    news_url = requests.get(url, headers={'User-Agent': 'Chrome'}) # 네이버 뉴스 페이지가 요구하는 브라우저 정보 작성
+    webpage = BeautifulSoup(news_url.text, 'html.parser')
+    content_list = webpage.select('div._article_content')
+
+    for content in content_list:
+        content_text_list.append(content.text) # content의 텍스트만 추출하여 content_text_list에 저장
+
+# 뉴스 URL 마다 get_content 함수 실행
+for url in get_link():
+    get_content(url)
+
