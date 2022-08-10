@@ -6,16 +6,23 @@ from collections import Counter  # 단어 빈도수 정리
 keyword = input('검색어를 입력하세요: ')
 last_page = int(input('몇 페이지까지 검색할까요? '))
 
+# keyword에 띄어쓰기가 있는 경우 띄어쓰기를 +로 대체하여 유효한 URL로 변경
+if ' ' in keyword:
+    keyword = keyword.replace(' ','+')
+
 search_url = f'https://search.naver.com/search.naver?where=news&ie=utf8&sm=nws_hty&query={keyword}'
-page_count = 1
+#page_count = 1
+
+news_count = []
 
 # link 얻기
 def get_link():
+
     link_list = []  # 최종 링크
     bad_link_list = []  # 필요없는 링크 포함
 
+    page_count = 1
     for page in range(1, last_page * 10, 10):  # 1페이지부터 last_page까지 반복
-        global page_count  # page_count 전역변수 설정
         print(f"Scrapping page {page_count}")
         page_count += 1
 
@@ -30,6 +37,9 @@ def get_link():
         for link in bad_link_list:
             if 'naver' in link:  # URL에 'naver'가 들어가 있는지 확인
                 link_list.append(link)
+
+    global news_count
+    news_count = link_list
 
     return link_list  # 뉴스 URL 리스트 반환
 
@@ -77,7 +87,7 @@ for word in bad_word_list:
 word_list_count = 0
 for word in word_list:
     if len(word) != 0:
-        if word[-1] in '을를이가은는':
+        if word[-1] in '을를이가은는수의로':
             word_list[word_list_count] = word[:-1]
     word_list_count += 1
 
@@ -86,8 +96,10 @@ for word in word_list:
     if len(word) <= 1:
         word_list.remove(word)
 
+
 # 단어 빈도 수 측정
 word_count = Counter(word_list)
+
 
 # 파일 생성
 words_file = open(f'/Users/eoorim/Desktop/Coding/Python/bigdata_seminar/{keyword} Words.txt', 'w')
@@ -97,5 +109,8 @@ for word in word_list:
 
 count_file = open(f'/Users/eoorim/Desktop/Coding/Python/bigdata_seminar/{keyword} Count.txt', 'w')
 count_file.write(str(word_count))
+
+print(f"\n검색된 기사: {len(news_count)}개")
+print(f"검색된 단어: {len(word_list)}개")
 
 
