@@ -79,7 +79,8 @@ for word in word_list:
     if len(word) <= 1:
         word_list.remove(word)
 
-print(word_list)
-
+# 단어 빈도 수 측정
+word_count = Counter(word_list)
+print(word_count)
 
 
