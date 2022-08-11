@@ -11,14 +11,13 @@ if ' ' in keyword:
     keyword = keyword.replace(' ','+')
 
 search_url = f'https://search.naver.com/search.naver?where=news&ie=utf8&sm=nws_hty&query={keyword}'
-#page_count = 1
 
-news_count = []
+news_count = [] # 검색된 기사 개수 확인 용 변수 정의
 
 # link 얻기
 def get_link():
 
-    link_list = []  # 최종 링크
+    link_list = []  # 최종 링크 리스트
     bad_link_list = []  # 필요없는 링크 포함
 
     page_count = 1
@@ -38,7 +37,7 @@ def get_link():
             if 'naver' in link:  # URL에 'naver'가 들어가 있는지 확인
                 link_list.append(link)
 
-    global news_count
+    global news_count  # news_count 전역 변수 설정
     news_count = link_list
 
     return link_list  # 뉴스 URL 리스트 반환
@@ -77,26 +76,39 @@ for list in really_bad_word_list:
         bad_word_list.append(word.split('.'))
 
 # 3단계 - 문장부호 제거 및 두 글자 이상 불용어 제거
-for word in bad_word_list:
+for word in bad_word_list:  # 제거가 필요한 두 글자 이상 불용어 제거
     word_list.append(word[0].replace('\'','').replace('\"','').replace('(','').replace(')','')\
-                    .replace('<','').replace('>','').replace(',','').replace('‘','')\
-                    .replace('’', '').replace('[','').replace(']','').replace('=','')\
-                    .replace('했다','').replace('이하','').replace('해나가고','').replace('입니다',''))
+                     .replace('<','').replace('>','').replace(',','').replace('‘','')\
+                     .replace('’', '').replace('[','').replace(']','').replace('=','')\
+                     .replace('했다','').replace('이하','').replace('해나가고','').replace('입니다','')\
+                     .replace('있다','').replace('대비','').replace('전년','').replace('동기','')\
+                     .replace('지난','').replace('위해','').replace('통해','').replace('기자','')\
+                     .replace('것으','').replace('밝혔다','').replace('이들','').replace('특히','')\
+                     .replace('경우','').replace('가장','').replace('매우','').replace('한다','')\
+                     .replace('모든','').replace('또한','').replace('따라','').replace('가장','')\
+                     .replace('이다','').replace('최근','').replace('보다','').replace('가진','')\
+                     .replace('다양한','').replace('때문','').replace('그런데','').replace('으로','')\
+                     .replace('합니다','').replace('아니라','').replace('다른','').replace('정도','')\
+                     .replace('하지만','').replace('것이다','').replace('따르면','').replace('최대','')\
+                     .replace('있어','').replace('있고','').replace('어떤','').replace('하고','')\
+                     .replace('것”이라고',''))
+
 
 # 4단계 - 단어 끝 조사 제거
 word_list_count = 0
 for word in word_list:
     if len(word) != 0:
-        if word[-1] in '을를이가은는수의로':
+        if word[-1] in '을를이가은는수의로있에것와한':  # 제거가 필요한 한 글자 조사 추가
             word_list[word_list_count] = word[:-1]
+            print(f"{word[-1]} replaced to {word[:-1]} at {word_list_count}")
     word_list_count += 1
 
 # 5단계 - 한 글자 이하 단어 제거
 for word in word_list:
-    if len(word) <= 1:
+    if len(word) < 2:
         word_list.remove(word)
-
-
+    if (word == '있') or (word == '이'):
+        word_list.remove(word)  # 잘 안 없어지는 한 글자 제거
 # 단어 빈도 수 측정
 word_count = Counter(word_list)
 
