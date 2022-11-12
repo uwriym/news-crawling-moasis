@@ -4,15 +4,14 @@ from bs4 import BeautifulSoup  # 웹사이트 크롤링
 from collections import Counter  # 단어 빈도수 정리
 
 keyword = input('검색어를 입력하세요: ')
+search_url = f'https://search.naver.com/search.naver?where=news&ie=utf8&sm=nws_hty&query={keyword}'
 last_page = int(input('몇 페이지까지 검색할까요? '))
 
 # keyword에 띄어쓰기가 있는 경우 띄어쓰기를 +로 대체하여 유효한 URL로 변경
 if ' ' in keyword:
     keyword = keyword.replace(' ','+')
 
-search_url = f'https://search.naver.com/search.naver?where=news&ie=utf8&sm=nws_hty&query={keyword}'
-
-news_count = [] # 검색된 기사 개수 확인 용 변수 정의
+news_count = []  # 검색된 기사 개수 확인용 변수 정의
 
 # link 얻기
 def get_link():
@@ -66,11 +65,11 @@ really_bad_word_list = []  # 공백을 기준으로 구분된 단어 리스트
 bad_word_list = []  # 마침표를 기준으로 구분된 단어 리스트
 word_list = []  # 불용어가 제거된 최종 단어 리스트
 
-# 1단계
+# 1단계 - 공백 기준 자르기
 for word in content_text_list:
     really_bad_word_list.append(word.split())
 
-# 2단계
+# 2단계 - 마침표 기준 자르기
 for list in really_bad_word_list:
     for word in list:
         bad_word_list.append(word.split('.'))
@@ -100,26 +99,29 @@ for word in word_list:
     if len(word) != 0:
         if word[-1] in '을를이가은는수의로있에것와한':  # 제거가 필요한 한 글자 조사 추가
             word_list[word_list_count] = word[:-1]
-            print(f"{word[-1]} replaced to {word[:-1]} at {word_list_count}")
+            #print(f"{word[-1]} replaced to {word[:-1]} at {word_list_count}")
     word_list_count += 1
 
 # 5단계 - 한 글자 이하 단어 제거
 for word in word_list:
     if len(word) < 2:
         word_list.remove(word)
-    if (word == '있') or (word == '이'):
-        word_list.remove(word)  # 잘 안 없어지는 한 글자 제거
+    try:
+        if (word == '있') or (word == '이'):
+            word_list.remove(word)  # 잘 안 없어지는 한 글자 제거
+    except:
+        pass
 # 단어 빈도 수 측정
 word_count = Counter(word_list)
 
 
 # 파일 생성
-words_file = open(f'/Users/eoorim/Desktop/Coding/Python/bigdata_seminar/{keyword} Words.txt', 'w')
+words_file = open(f'/Users/eoorim/Desktop/Coding/Python/M.Oasis/crawling-result/{keyword} Words.txt', 'w')
 for word in word_list:
     words_file.write(word)
     words_file.write(', ')
 
-count_file = open(f'/Users/eoorim/Desktop/Coding/Python/bigdata_seminar/{keyword} Count.txt', 'w')
+count_file = open(f'/Users/eoorim/Desktop/Coding/Python/M.Oasis/crawling-result/{keyword} Count.txt', 'w')
 count_file.write(str(word_count))
 
 print(f"\n검색된 기사: {len(news_count)}개")
